@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Crypto2" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Crypto2" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+					<Add directory="../../../../boost" />
+				</Compiler>
+				<Linker>
+					<Add option="-lws2_32" />
+					<Add option="-lwsock32" />
+					<Add library="../../../../boost/lib/libboost_system-mgw49-mt-1_64.a" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Crypto2" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="Salsa20.cpp" />
+		<Unit filename="Salsa20.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="server/connection.cpp" />
+		<Unit filename="server/connection.hpp" />
+		<Unit filename="server/connection_manager.cpp" />
+		<Unit filename="server/connection_manager.hpp" />
+		<Unit filename="server/header.hpp" />
+		<Unit filename="server/mime_types.cpp" />
+		<Unit filename="server/mime_types.hpp" />
+		<Unit filename="server/reply.cpp" />
+		<Unit filename="server/reply.hpp" />
+		<Unit filename="server/request.hpp" />
+		<Unit filename="server/request_handler.cpp" />
+		<Unit filename="server/request_handler.hpp" />
+		<Unit filename="server/request_parser.cpp" />
+		<Unit filename="server/request_parser.hpp" />
+		<Unit filename="server/server.cpp" />
+		<Unit filename="server/server.hpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
