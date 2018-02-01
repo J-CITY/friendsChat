@@ -14,12 +14,14 @@
 				<Compiler>
 					<Add option="-std=c++11" />
 					<Add option="-g" />
-					<Add directory="../../../../boost" />
+					<Add directory="C:/boost" />
 				</Compiler>
 				<Linker>
 					<Add option="-lws2_32" />
 					<Add option="-lwsock32" />
-					<Add library="../../../../boost/lib/libboost_system-mgw49-mt-1_64.a" />
+					<Add library="C:/boost/lib/libboost_system-mgw49-mt-1_64.a" />
+					<Add library="C:/Users/333da/Desktop/FC/friendsChat/Client/lib/panel.a" />
+					<Add library="C:/Users/333da/Desktop/FC/friendsChat/Client/lib/pdcurses.a" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -39,6 +41,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="Base64.h" />
+		<Unit filename="Chat.h" />
+		<Unit filename="Menu.h" />
 		<Unit filename="Salsa20.cpp" />
 		<Unit filename="Salsa20.h" />
 		<Unit filename="main.cpp" />

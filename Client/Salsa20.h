@@ -53,37 +53,53 @@ struct Matrix {
     }
 };
 
+enum class SalsaText : int {
+    SALSA_FILE = 1,
+    SALSA_STRING = 2
+};
+
 class Salsa20 {
 public:
-    const static int SALSA_FILE = 1;
-    const static int SALSA_STRING = 2;
+    //const static int SALSA_FILE = 1;
+    //const static int SALSA_STRING = 2;
 
-    Salsa20(std::string in, int type = SALSA_FILE) {
-        if (type == SALSA_FILE) {
+    Salsa20(){}
+
+    Salsa20(std::string in, SalsaText type = SalsaText::SALSA_FILE) {
+        SetText(in, type);
+    }
+
+    void SetText(std::string in, SalsaText type = SalsaText::SALSA_FILE) {
+        if (type == SalsaText::SALSA_FILE) {
             std::ifstream file(in);
             std::string line;
             while (std::getline(file, line)) {
                 text += line;
             }
-        } else if (type == SALSA_STRING) {
+
+            //text = "HTTP/1.0 200 OK\nContent-Length: 28\nContent-Type: text/html\n\n" + text;
+        } else if (type == SalsaText::SALSA_STRING) {
             text = in;
         }
         std::cout << text << std::endl;
     }
 
-    void GenKey() {
+    std::string GenKey(bool needSave) {
         for (int i = 0; i < 32; i++) {
-            key.push_back(rand() % 256);
+            key.push_back(33 + rand() % 92);
         }
         std::ofstream stream ("key.txt");
+        std::string keystr = "";
         for(int i = 0; i < key.size(); ++i) {
-            stream << key[i];
+            keystr += key[i];
+            if (needSave) stream << key[i];
         }
+        return keystr;
     }
 
-     void Encode(std::string _key, std::string outfile = "out.txt") {
+    std::string Encode(std::string _key) {//, std::string outfile = "out.txt"
         if (_key == "") {
-            GenKey();
+            GenKey(true);
         } else {
             for (int i = 0; i < _key.size(); ++i) {
                 key.push_back(_key[i]);
@@ -106,18 +122,27 @@ public:
         }
 
 
-        std::string textOut;
+        std::string textOut = "";
 
         for(int i = 0; i < textToIntVec.size(); ++i) {
             std::vector<unsigned char> v = IntToFourChar(textToIntVec[i]);
             for(int j = 0; j < v.size(); ++j) {
-                if (v[j] != 0)
-                    textOut += v[j];
+                textOut += v[j];
             }
         }
 
-        std::ofstream stream (outfile);
-        stream << textOut;
+        //std::ofstream stream (outfile);
+        //stream << textOut;
+        while(textOut[textOut.size()-1] == 0) {
+            textOut = textOut.substr(0, textOut.size()-1);
+        }
+        return textOut;
+    }
+    void AddToTextFront(std::string t) {
+        text = t + text;
+    }
+    void AddToTextBack(std::string t) {
+        text = text + t;
     }
 private:
     std::vector<unsigned char> s0 = {101, 120, 112, 97};
@@ -178,7 +203,7 @@ private:
 //private:
     std::vector<uint32_t> textToIntVec;
 
-    unsigned long long int EncodeText(unsigned long long int pos) {
+    void EncodeText(unsigned long long int pos) {
         mat.mat[0][0] = FourCharToInt(s0);
         mat.mat[0][1] = FourCharToInt(key[0],key[1],key[2],key[3]);
         mat.mat[0][2] = FourCharToInt(key[4],key[5],key[6],key[7]);
