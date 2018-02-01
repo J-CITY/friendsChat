@@ -1,11 +1,38 @@
 # friendsChat
 
-Crypyo3 folder is server.
+server path: server/server.exe
 
-Client/Client.exe - client connect to server
+client path: Client/Client.exe
 
-Client/ClientWithProxy.exe - connect to proxy
+proxy path - server/proxy.exe
 
-Crypto3/proxy - run proxy
+Server help:
 
-Crypto3/Crypto.exe - run server
+p - print all users
+
+d and then enter <id> - delete user with <id>
+
+a - add users, create client.txt with user id and password
+
+Q - exit
+
+Client help:
+
+KEY_DOWN and KEY_UP - change choice between name and port
+
+KEY_LEFT - delete last symbol
+
+port = 10001 - connect to server
+
+port = 10002 - connect to proxy
+ 
+In chat:
+
+'\n' - send message
+
+KEY_DOWN and KEY_UP - leaf text area
+
+KEY_LEFT - delete last symbol
+
+Q - exit
+

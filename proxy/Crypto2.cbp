@@ -14,12 +14,12 @@
 				<Compiler>
 					<Add option="-std=c++11" />
 					<Add option="-g" />
-					<Add directory="../../../../boost" />
+					<Add directory="C:/boost" />
 				</Compiler>
 				<Linker>
 					<Add option="-lws2_32" />
 					<Add option="-lwsock32" />
-					<Add library="../../../../boost/lib/libboost_system-mgw49-mt-1_64.a" />
+					<Add library="C:/boost/lib/libboost_system-mgw49-mt-1_64.a" />
 				</Linker>
 			</Target>
 			<Target title="Release">

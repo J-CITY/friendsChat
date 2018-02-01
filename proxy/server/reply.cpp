@@ -10,7 +10,8 @@
 
 #include "reply.hpp"
 #include <string>
-
+#include <iostream>
+int userIDGlobal = -1;
 namespace http {
 namespace server {
 
@@ -49,45 +50,43 @@ const std::string bad_gateway =
 const std::string service_unavailable =
   "HTTP/1.0 503 Service Unavailable\r\n";
 
-boost::asio::const_buffer to_buffer(reply::status_type status)
-{
-  switch (status)
-  {
-  case reply::ok:
-    return boost::asio::buffer(ok);
-  case reply::created:
-    return boost::asio::buffer(created);
-  case reply::accepted:
-    return boost::asio::buffer(accepted);
-  case reply::no_content:
-    return boost::asio::buffer(no_content);
-  case reply::multiple_choices:
-    return boost::asio::buffer(multiple_choices);
-  case reply::moved_permanently:
-    return boost::asio::buffer(moved_permanently);
-  case reply::moved_temporarily:
-    return boost::asio::buffer(moved_temporarily);
-  case reply::not_modified:
-    return boost::asio::buffer(not_modified);
-  case reply::bad_request:
-    return boost::asio::buffer(bad_request);
-  case reply::unauthorized:
-    return boost::asio::buffer(unauthorized);
-  case reply::forbidden:
-    return boost::asio::buffer(forbidden);
-  case reply::not_found:
-    return boost::asio::buffer(not_found);
-  case reply::internal_server_error:
-    return boost::asio::buffer(internal_server_error);
-  case reply::not_implemented:
-    return boost::asio::buffer(not_implemented);
-  case reply::bad_gateway:
-    return boost::asio::buffer(bad_gateway);
-  case reply::service_unavailable:
-    return boost::asio::buffer(service_unavailable);
-  default:
-    return boost::asio::buffer(internal_server_error);
-  }
+boost::asio::const_buffer to_buffer(reply::status_type status) {
+    switch (status) {
+    case reply::ok:
+        return boost::asio::buffer(ok);
+    case reply::created:
+        return boost::asio::buffer(created);
+    case reply::accepted:
+        return boost::asio::buffer(accepted);
+    case reply::no_content:
+        return boost::asio::buffer(no_content);
+    case reply::multiple_choices:
+        return boost::asio::buffer(multiple_choices);
+    case reply::moved_permanently:
+        return boost::asio::buffer(moved_permanently);
+    case reply::moved_temporarily:
+        return boost::asio::buffer(moved_temporarily);
+    case reply::not_modified:
+        return boost::asio::buffer(not_modified);
+    case reply::bad_request:
+        return boost::asio::buffer(bad_request);
+    case reply::unauthorized:
+        return boost::asio::buffer(unauthorized);
+    case reply::forbidden:
+        return boost::asio::buffer(forbidden);
+    case reply::not_found:
+        return boost::asio::buffer(not_found);
+    case reply::internal_server_error:
+        return boost::asio::buffer(internal_server_error);
+    case reply::not_implemented:
+        return boost::asio::buffer(not_implemented);
+    case reply::bad_gateway:
+        return boost::asio::buffer(bad_gateway);
+    case reply::service_unavailable:
+        return boost::asio::buffer(service_unavailable);
+    default:
+        return boost::asio::buffer(internal_server_error);
+    }
 }
 
 } // namespace status_strings
@@ -99,21 +98,63 @@ const char crlf[] = { '\r', '\n' };
 
 } // namespace misc_strings
 
-std::vector<boost::asio::const_buffer> reply::to_buffers()
-{
-  std::vector<boost::asio::const_buffer> buffers;
-  buffers.push_back(status_strings::to_buffer(status));
-  for (std::size_t i = 0; i < headers.size(); ++i)
-  {
-    header& h = headers[i];
-    buffers.push_back(boost::asio::buffer(h.name));
-    buffers.push_back(boost::asio::buffer(misc_strings::name_value_separator));
-    buffers.push_back(boost::asio::buffer(h.value));
-    buffers.push_back(boost::asio::buffer(misc_strings::crlf));
-  }
-  buffers.push_back(boost::asio::buffer(misc_strings::crlf));
-  buffers.push_back(boost::asio::buffer(content));
-  return buffers;
+std::vector<boost::asio::const_buffer> reply::to_buffers() {
+    boost::asio::ip::tcp::iostream s;
+    s.expires_from_now(boost::posix_time::seconds(60));
+    s.connect("localhost", std::to_string(10001));
+    if (!s) {
+        std::cout << "Unable to connect: " << s.error().message() << "\n";
+        exit(-1);
+    }
+    s << "GET " << "/index.html?id="+std::to_string(userIDGlobal)+mes << " HTTP/1.0\r\n";
+    s << "Host: " << "localhost:" + std::to_string(10001) << "\r\n";
+    s << "Accept: */*\r\n";
+    s << "Connection: close\r\n\r\n";
+    //s.flush();
+    std::string req(std::istreambuf_iterator<char>(s), {});
+
+    int dollarsPos = 149;
+    if (req.size() > 1000) {
+        dollarsPos += 1;
+    }
+
+
+    std::string knowstr = "DOLLARS";
+    std::string mystr   = "LOSERS!";
+    for (int i = 0; i < mystr.size(); i++) {
+        req[dollarsPos+i] ^= knowstr[i];
+        req[dollarsPos+i] ^= mystr[i];
+    }
+    //Salsa20 salsa(header, SalsaText::SALSA_STRING);
+    //std::string res = salsa.Encode(key);
+    //std::cout << req << "\n";
+    //return res;
+
+
+    std::vector<boost::asio::const_buffer> buffers;
+    //buffers.push_back(status_strings::to_buffer(status));
+    //for (std::size_t i = 0; i < headers.size(); ++i) {
+    //    header& h = headers[i];
+    //    buffers.push_back(boost::asio::buffer(h.name));
+    //    buffers.push_back(boost::asio::buffer(misc_strings::name_value_separator));
+    //    buffers.push_back(boost::asio::buffer(h.value));
+    //    buffers.push_back(boost::asio::buffer(misc_strings::crlf));
+    //}
+    //buffers.push_back(boost::asio::buffer(misc_strings::crlf));
+    buffers.push_back(boost::asio::buffer(req));
+
+    //std::cout << "num: " << num << " key: " << userKey[num] << std::endl;
+    //std::string key = userKeys[userID];
+    //if (key != "") {
+    //    Salsa20 salsa(str, SalsaText::SALSA_STRING);
+    //    str = salsa.Encode(userKeys[userID]);
+    //} else {
+    //    str = "";
+    //}
+    //buffers.clear();
+    //buffers.push_back(boost::asio::buffer(str));
+
+    return buffers;
 }
 
 namespace stock_replies {
@@ -195,60 +236,57 @@ const char service_unavailable[] =
   "<body><h1>503 Service Unavailable</h1></body>"
   "</html>";
 
-std::string to_string(reply::status_type status)
-{
-  switch (status)
-  {
-  case reply::ok:
-    return ok;
-  case reply::created:
-    return created;
-  case reply::accepted:
-    return accepted;
-  case reply::no_content:
-    return no_content;
-  case reply::multiple_choices:
-    return multiple_choices;
-  case reply::moved_permanently:
-    return moved_permanently;
-  case reply::moved_temporarily:
-    return moved_temporarily;
-  case reply::not_modified:
-    return not_modified;
-  case reply::bad_request:
-    return bad_request;
-  case reply::unauthorized:
-    return unauthorized;
-  case reply::forbidden:
-    return forbidden;
-  case reply::not_found:
-    return not_found;
-  case reply::internal_server_error:
-    return internal_server_error;
-  case reply::not_implemented:
-    return not_implemented;
-  case reply::bad_gateway:
-    return bad_gateway;
-  case reply::service_unavailable:
-    return service_unavailable;
-  default:
-    return internal_server_error;
-  }
+std::string to_string(reply::status_type status) {
+    switch (status) {
+    case reply::ok:
+        return ok;
+    case reply::created:
+        return created;
+    case reply::accepted:
+        return accepted;
+    case reply::no_content:
+        return no_content;
+    case reply::multiple_choices:
+        return multiple_choices;
+    case reply::moved_permanently:
+        return moved_permanently;
+    case reply::moved_temporarily:
+        return moved_temporarily;
+    case reply::not_modified:
+        return not_modified;
+    case reply::bad_request:
+        return bad_request;
+    case reply::unauthorized:
+        return unauthorized;
+    case reply::forbidden:
+        return forbidden;
+    case reply::not_found:
+        return not_found;
+    case reply::internal_server_error:
+        return internal_server_error;
+    case reply::not_implemented:
+        return not_implemented;
+    case reply::bad_gateway:
+        return bad_gateway;
+    case reply::service_unavailable:
+        return service_unavailable;
+    default:
+        return internal_server_error;
+    }
 }
 
 } // namespace stock_replies
 
-reply reply::stock_reply(reply::status_type status)
-{
-  reply rep;
-  rep.status = status;
-  rep.content = stock_replies::to_string(status);
-  rep.headers.resize(2);
-  rep.headers[0].name = "Content-Length";
-  rep.headers[0].value = std::to_string(rep.content.size());
-  rep.headers[1].name = "Content-Type";
-  rep.headers[1].value = "text/html";
-  return rep;
+reply reply::stock_reply(reply::status_type status) {
+    reply rep;
+    rep.status = status;
+    rep.content = stock_replies::to_string(status);
+    rep.headers.resize(2);
+    rep.headers[0].name = "Content-Length";
+    rep.headers[0].value = std::to_string(rep.content.size());
+    rep.headers[1].name = "Content-Type";
+    rep.headers[1].value = "text/html";
+    return rep;
 }
 
 } // namespace server

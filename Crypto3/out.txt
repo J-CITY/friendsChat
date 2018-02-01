@@ -1,1 +1,0 @@
-<html>	<head>		<title>Message</title>	</head>	<body bgcolor=white>		<p>My first message.</p>	</body></html>
